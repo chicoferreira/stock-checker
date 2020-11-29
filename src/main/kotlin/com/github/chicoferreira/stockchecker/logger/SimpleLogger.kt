@@ -22,6 +22,6 @@ open class SimpleLogger : Logger {
             else -> "[UNKNOWN]"
         }
 
-        println("[$date] $prefix $message")
+        println("[$date] $prefix $message ${ConsoleColor.RESET}")
     }
 }
