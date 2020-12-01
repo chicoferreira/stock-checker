@@ -28,7 +28,7 @@ class StockChecker {
 
         logger.info("Connecting to $url...")
 
-        val websiteParser = WebsiteParsers.values().find { url.startsWith(it.websiteUrl) }
+        val websiteParser = WebsiteParsers.values().find { it.isUrl(url) }
 
         if (websiteParser == null) {
             logger.warning("Couldn't find parser for $url.")
@@ -65,7 +65,7 @@ class StockChecker {
 
         builder.append("${ConsoleColor.GRAY}$productName ")
 
-        if (this.available) {
+        if (this.isAvailable()) {
             builder.append("${ConsoleColor.GREEN}IN STOCK ${ConsoleColor.RESET}for ${ConsoleColor.GREEN}${price}")
             builder.append("${priceCurrency}${ConsoleColor.RESET} available in ${ConsoleColor.GREEN}")
             builder.append("${availableShops.count { it.value }}/${availableShops.count()}${ConsoleColor.RESET} shops")

@@ -1,6 +1,7 @@
-package com.github.chicoferreira.stockchecker.parser
+package com.github.chicoferreira.stockchecker.parser.impl
 
 import com.github.chicoferreira.stockchecker.StockCheckResult
+import com.github.chicoferreira.stockchecker.parser.WebsiteParser
 import org.jsoup.nodes.Document
 
 class PCDIGAWebsiteParser : WebsiteParser {
@@ -20,9 +21,6 @@ class PCDIGAWebsiteParser : WebsiteParser {
 
         val stockColumn = document.select(".col-lg-3.bg-white")
 
-        val available = stockColumn.select(".product.alert.stock").isEmpty()
-                        && stockColumn.select(".product-add-form").isNotEmpty()
-
         val availableShops = LinkedHashMap<String, Boolean>()
 
         for (element in stockColumn.select(".store-stock-location")) {
@@ -31,6 +29,6 @@ class PCDIGAWebsiteParser : WebsiteParser {
             availableShops[element.text()] = availableShop
         }
 
-        return StockCheckResult(productName, price, priceCurrency, available, availableShops)
+        return StockCheckResult(productName, price, priceCurrency, availableShops)
     }
 }
