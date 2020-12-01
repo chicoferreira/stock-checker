@@ -3,6 +3,7 @@ Stock Checker is a console based program made in **Kotlin JVM** to grab product'
 
 ### Currently supported websites
 - PCDIGA.com
+- Pichau.com.br
 
 ## Visuals
 
