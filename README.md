@@ -6,8 +6,8 @@ Stock Checker is a console based program made in **Kotlin JVM** to grab product'
 
 ## Visuals
 
-![Preview](https://imgur.com/a/LtfmCZb)
-![Preview](https://imgur.com/a/D9nC9kS)
+![Preview Stock](https://i.imgur.com/7hpFCh5.png)
+![Preview Not in Stock](https://i.imgur.com/fvK0kvS.png)
 
 ## Installation 
 Stock Checker uses *Kotlin JVM* and *Gradle* to manage dependencies and building.
