@@ -4,6 +4,11 @@ data class StockCheckResult(
     val productName: String,
     val price: Double,
     val priceCurrency: String,
-    val available: Boolean,
     val availableShops: Map<String, Boolean>
-)
+) {
+
+    fun isAvailable(): Boolean {
+        return availableShops.any { it.value }
+    }
+
+}
