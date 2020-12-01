@@ -10,18 +10,18 @@ open class SimpleLogger : Logger {
 
     override fun log(logLevel: Level, message: String) {
         val date = DateTimeFormatter
-                .ofPattern("HH:mm:ss.SSS")
+                .ofPattern("HH:mm:ss")
                 .withLocale(Locale.getDefault())
                 .withZone(ZoneId.systemDefault()).format(Instant.now())
 
         val prefix = when (logLevel) {
-            Level.INFO -> "[INFO]"
-            Level.WARNING -> "[WARNING]"
-            Level.SEVERE -> "[SEVERE]"
-            Level.CONFIG -> "[DEBUG]"
-            else -> "[UNKNOWN]"
+            Level.INFO -> "${ConsoleColor.GREEN}[INFO]"
+            Level.WARNING -> "${ConsoleColor.RED}[WARNING]"
+            Level.SEVERE -> "${ConsoleColor.DARK_RED}[SEVERE]"
+            Level.CONFIG -> "${ConsoleColor.DARK_BLUE}[DEBUG]"
+            else -> "${ConsoleColor.DARK_GRAY}[UNKNOWN]"
         }
 
-        println("[$date] $prefix $message ${ConsoleColor.RESET}")
+        println("${ConsoleColor.DARK_GRAY}[$date] $prefix${ConsoleColor.RESET} $message${ConsoleColor.RESET}")
     }
 }

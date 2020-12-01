@@ -1,21 +1,23 @@
 package com.github.chicoferreira.stockchecker.logger
 
-import org.fusesource.jansi.Ansi
+import org.fusesource.jansi.Ansi.*
 
 enum class ConsoleColor(private val colorCode: String) {
 
-    BLACK(Ansi.ansi().a(Ansi.Attribute.RESET).fg(Ansi.Color.BLACK).boldOff().toString()),
-    DARK_GREEN(Ansi.ansi().a(Ansi.Attribute.RESET).fg(Ansi.Color.GREEN).boldOff().toString()),
-    GRAY(Ansi.ansi().a(Ansi.Attribute.RESET).fg(Ansi.Color.WHITE).boldOff().toString()),
-    DARK_GRAY(Ansi.ansi().a(Ansi.Attribute.RESET).fg(Ansi.Color.BLACK).bold().toString()),
-    GREEN(Ansi.ansi().a(Ansi.Attribute.RESET).fg(Ansi.Color.GREEN).bold().toString()),
-    RED(Ansi.ansi().a(Ansi.Attribute.RESET).fg(Ansi.Color.RED).bold().toString()),
-    WHITE(Ansi.ansi().a(Ansi.Attribute.RESET).fg(Ansi.Color.WHITE).bold().toString()),
-    BOLD(Ansi.ansi().a(Ansi.Attribute.UNDERLINE_DOUBLE).toString()),
-    STRIKETHROUGH(Ansi.ansi().a(Ansi.Attribute.STRIKETHROUGH_ON).toString()),
-    UNDERLINE(Ansi.ansi().a(Ansi.Attribute.UNDERLINE).toString()),
-    ITALIC(Ansi.ansi().a(Ansi.Attribute.ITALIC).toString()),
-    RESET(Ansi.ansi().a(Ansi.Attribute.RESET).toString());
+    BLACK(ansi().a(Attribute.RESET).fg(Color.BLACK).boldOff().toString()),
+    DARK_GREEN(ansi().a(Attribute.RESET).fg(Color.GREEN).boldOff().toString()),
+    DARK_BLUE(ansi().a(Attribute.RESET).fg(Color.BLUE).boldOff().toString()),
+    GRAY(ansi().a(Attribute.RESET).fg(Color.WHITE).boldOff().toString()),
+    DARK_GRAY(ansi().a(Attribute.RESET).fg(Color.BLACK).bold().toString()),
+    GREEN(ansi().a(Attribute.RESET).fg(Color.GREEN).bold().toString()),
+    DARK_RED(ansi().a(Attribute.RESET).fg(Color.RED).bold().toString()),
+    RED(ansi().a(Attribute.RESET).fgBrightRed().bold().toString()),
+    WHITE(ansi().a(Attribute.RESET).fg(Color.WHITE).bold().toString()),
+    BOLD(ansi().a(Attribute.UNDERLINE_DOUBLE).toString()),
+    STRIKETHROUGH(ansi().a(Attribute.STRIKETHROUGH_ON).toString()),
+    UNDERLINE(ansi().a(Attribute.UNDERLINE).toString()),
+    ITALIC(ansi().a(Attribute.ITALIC).toString()),
+    RESET(ansi().a(Attribute.RESET).toString());
 
 
     override fun toString(): String {

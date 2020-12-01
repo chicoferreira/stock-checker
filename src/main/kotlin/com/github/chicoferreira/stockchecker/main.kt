@@ -45,7 +45,7 @@ fun main(args: Array<String>) {
 fun StockCheckResult.print() {
     val builder = StringBuilder()
 
-    builder.append("${ConsoleColor.DARK_GRAY}$productName ")
+    builder.append("${ConsoleColor.GRAY}$productName ")
 
     if (this.available) {
         builder.append("${ConsoleColor.GREEN}IN STOCK ${ConsoleColor.RESET}for ${ConsoleColor.GREEN}${price}")
