@@ -2,6 +2,8 @@ package com.github.chicoferreira.stockchecker.parser.impl
 
 import com.github.chicoferreira.stockchecker.StockCheckResult
 import com.github.chicoferreira.stockchecker.parser.WebsiteParser
+import com.github.chicoferreira.stockchecker.parser.property.ProductProperties
+import com.github.chicoferreira.stockchecker.util.Price
 import org.jsoup.nodes.Document
 
 /**
@@ -15,14 +17,18 @@ class PichauWebsiteParser : WebsiteParser {
 
         val productPrice = document.selectFirst("meta[property=product:price:amount]")
                 .attr("content")
-                .toDouble()
+                .toBigDecimal()
 
         val priceCurrency = document.selectFirst("meta[property=product:price:currency]")
                 .attr("content")
 
         val available = document.select("div[class=stock available]").isNotEmpty()
 
-        return StockCheckResult(productName, productPrice, priceCurrency, mapOf("main" to available))
+        return StockCheckResult(
+                ProductProperties.PRODUCT_NAME.ofValue(productName),
+                ProductProperties.AVAILABILITY.ofValue(available),
+                ProductProperties.PRICE.ofValue(Price(productPrice, priceCurrency)),
+        )
     }
 
 }

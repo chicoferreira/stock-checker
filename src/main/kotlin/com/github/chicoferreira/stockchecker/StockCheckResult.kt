@@ -1,14 +1,16 @@
 package com.github.chicoferreira.stockchecker
 
-data class StockCheckResult(
-    val productName: String,
-    val price: Double,
-    val priceCurrency: String,
-    val availableShops: Map<String, Boolean>
-) {
+import com.github.chicoferreira.stockchecker.parser.property.ProductProperty
 
-    fun isAvailable(): Boolean {
-        return availableShops.any { it.value }
+data class StockCheckResult(val list: List<ProductProperty.Value<*>>) {
+
+    constructor(vararg values: ProductProperty.Value<*>) : this(values.toList())
+
+    fun buildRender(): String {
+        val builder = StringBuilder()
+
+        for (property: ProductProperty.Value<*> in list) builder.append(property.render()).append(" ")
+
+        return builder.toString()
     }
-
 }

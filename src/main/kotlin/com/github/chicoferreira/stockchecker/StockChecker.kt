@@ -3,7 +3,6 @@ package com.github.chicoferreira.stockchecker
 import com.github.chicoferreira.stockchecker.command.CommandExecutor
 import com.github.chicoferreira.stockchecker.command.CommandManager
 import com.github.chicoferreira.stockchecker.commands.ExitCommand
-import com.github.chicoferreira.stockchecker.logger.ConsoleColor
 import com.github.chicoferreira.stockchecker.logger.Logger
 import com.github.chicoferreira.stockchecker.logger.SimpleLogger
 import com.github.chicoferreira.stockchecker.parser.WebsiteParsers
@@ -39,7 +38,7 @@ class StockChecker {
             runCatching<Document> {
                 Jsoup.connect(url).get()
             }.onSuccess {
-                websiteParser.parser.parse(it).print()
+                websiteParser.parser.parse(it).buildRender().also { result -> logger.info(result) }
             }.onFailure {
                 logger.warning("Couldn't connect to $url: ${it.message}")
             }
@@ -58,22 +57,6 @@ class StockChecker {
         AnsiConsole.systemUninstall()
 
         enabled = false
-    }
-
-    private fun StockCheckResult.print() {
-        val builder = StringBuilder()
-
-        builder.append("${ConsoleColor.GRAY}$productName ")
-
-        if (this.isAvailable()) {
-            builder.append("${ConsoleColor.GREEN}IN STOCK ${ConsoleColor.RESET}for ${ConsoleColor.GREEN}${price}")
-            builder.append("${priceCurrency}${ConsoleColor.RESET} available in ${ConsoleColor.GREEN}")
-            builder.append("${availableShops.count { it.value }}/${availableShops.count()}${ConsoleColor.RESET} shops")
-        } else {
-            builder.append("${ConsoleColor.RED}NOT IN STOCK")
-        }
-
-        logger.info(builder.toString())
     }
 
     private fun askForCommandInput() {
