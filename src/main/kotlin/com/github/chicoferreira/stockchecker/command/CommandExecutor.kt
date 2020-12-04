@@ -1,6 +1,6 @@
 package com.github.chicoferreira.stockchecker.command
 
-import com.github.chicoferreira.stockchecker.logger.ConsoleColor
+import com.github.chicoferreira.stockchecker.console.ConsoleColor
 import com.github.chicoferreira.stockchecker.logger.Logger
 
 class CommandExecutor(private val logger: Logger, private val commandManager: CommandManager) {

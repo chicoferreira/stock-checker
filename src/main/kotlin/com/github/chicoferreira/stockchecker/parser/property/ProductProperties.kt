@@ -1,6 +1,6 @@
 package com.github.chicoferreira.stockchecker.parser.property
 
-import com.github.chicoferreira.stockchecker.logger.ConsoleColor.*
+import com.github.chicoferreira.stockchecker.console.ConsoleColor.*
 import com.github.chicoferreira.stockchecker.util.Price
 
 class ProductProperties {
