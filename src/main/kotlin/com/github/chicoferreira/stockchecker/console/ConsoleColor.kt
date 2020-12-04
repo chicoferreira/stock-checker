@@ -1,4 +1,4 @@
-package com.github.chicoferreira.stockchecker.logger
+package com.github.chicoferreira.stockchecker.console
 
 import org.fusesource.jansi.Ansi.*
 

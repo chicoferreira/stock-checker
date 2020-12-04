@@ -17,6 +17,8 @@ repositories {
 dependencies {
     implementation("org.jsoup:jsoup:1.11.3")
     implementation("org.fusesource.jansi:jansi:2.0.1")
+    implementation("org.jline:jline:3.9.0")
+    implementation("org.jline:jline-terminal-jansi:3.17.1")
 }
 
 tasks.withType<KotlinCompile> {

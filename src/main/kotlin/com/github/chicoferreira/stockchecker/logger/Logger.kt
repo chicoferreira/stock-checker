@@ -14,4 +14,6 @@ interface Logger {
 
     fun log(logLevel: Level, message: String)
 
+    fun log(logLevel: Level, message: String, throwable: Throwable) = log(logLevel, message)
+
 }

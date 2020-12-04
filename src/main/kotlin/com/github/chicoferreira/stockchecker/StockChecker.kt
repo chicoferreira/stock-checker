@@ -3,10 +3,8 @@ package com.github.chicoferreira.stockchecker
 import com.github.chicoferreira.stockchecker.command.CommandExecutor
 import com.github.chicoferreira.stockchecker.command.CommandManager
 import com.github.chicoferreira.stockchecker.commands.ExitCommand
-import com.github.chicoferreira.stockchecker.logger.Logger
-import com.github.chicoferreira.stockchecker.logger.SimpleLogger
+import com.github.chicoferreira.stockchecker.console.Console
 import com.github.chicoferreira.stockchecker.parser.WebsiteParsers
-import org.fusesource.jansi.AnsiConsole
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import java.util.*
@@ -15,22 +13,25 @@ import kotlin.concurrent.fixedRateTimer
 class StockChecker {
 
     private var enabled = true
-    private val logger: Logger = SimpleLogger()
-    private var timer: Timer? = null
+    private val console = Console()
     private val commandManager = CommandManager()
-    private val commandExecutor = CommandExecutor(logger, commandManager)
+    private lateinit var commandExecutor: CommandExecutor
+    private lateinit var timer: Timer
 
     fun enable() {
-        AnsiConsole.systemInstall()
-        logger.info("Insert link:")
-        val url = readLine() ?: throw IllegalArgumentException()
+        console.setup()
 
-        logger.info("Connecting to $url...")
+        commandExecutor = CommandExecutor(console, commandManager)
+
+        console.info("Insert link:")
+        val url = console.readLine()
+
+        console.info("Connecting to $url...")
 
         val websiteParser = WebsiteParsers.values().find { it.isUrl(url) }
 
         if (websiteParser == null) {
-            logger.warning("Couldn't find parser for $url.")
+            console.warning("Couldn't find parser for $url.")
             return
         }
 
@@ -38,30 +39,23 @@ class StockChecker {
             runCatching<Document> {
                 Jsoup.connect(url).get()
             }.onSuccess {
-                websiteParser.parser.parse(it).buildRender().also { result -> logger.info(result) }
+                websiteParser.parser.parse(it).buildRender().also { result -> console.info(result) }
             }.onFailure {
-                logger.warning("Couldn't connect to $url: ${it.message}")
+                console.warning("Couldn't connect to $url: ${it.message}")
             }
         }
 
         commandManager.register(ExitCommand(this))
 
         while (enabled) {
-            askForCommandInput()
+            commandExecutor.execute(console.readLine())
         }
     }
 
     fun exit() {
-        timer?.cancel()
-        logger.info("Exiting...")
-        AnsiConsole.systemUninstall()
+        timer.cancel()
+        console.info("Exiting...")
 
         enabled = false
     }
-
-    private fun askForCommandInput() {
-        val command = readLine() ?: return
-        commandExecutor.execute(command)
-    }
-
 }

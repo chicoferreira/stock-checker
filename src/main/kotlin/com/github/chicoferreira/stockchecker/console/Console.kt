@@ -1,12 +1,31 @@
-package com.github.chicoferreira.stockchecker.logger
+package com.github.chicoferreira.stockchecker.console
 
+import com.github.chicoferreira.stockchecker.logger.Logger
+import org.jline.reader.LineReader
+import org.jline.reader.LineReaderBuilder
+import org.jline.terminal.TerminalBuilder
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.logging.Level
 
-open class SimpleLogger : Logger {
+class Console : Logger {
+
+    companion object {
+        const val PROMPT = "> "
+    }
+
+    private lateinit var reader: LineReader
+
+    fun setup() {
+        val terminal = TerminalBuilder.builder().jansi(true).name("Stock Checker").build()
+        reader = LineReaderBuilder.builder().terminal(terminal).build()
+    }
+
+    fun readLine(): String {
+        return reader.readLine(PROMPT)
+    }
 
     override fun log(logLevel: Level, message: String) {
         val date = DateTimeFormatter
@@ -22,6 +41,7 @@ open class SimpleLogger : Logger {
             else -> "${ConsoleColor.DARK_GRAY}[UNKNOWN]"
         }
 
-        println("${ConsoleColor.DARK_GRAY}[$date] $prefix${ConsoleColor.RESET} $message${ConsoleColor.RESET}")
+        reader.printAbove("${ConsoleColor.DARK_GRAY}[$date] $prefix${ConsoleColor.RESET} $message${ConsoleColor.RESET}")
     }
+
 }
