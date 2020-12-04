@@ -6,7 +6,9 @@ import com.github.chicoferreira.stockchecker.commands.ExitCommand
 import com.github.chicoferreira.stockchecker.logger.Logger
 import com.github.chicoferreira.stockchecker.logger.SimpleLogger
 import com.github.chicoferreira.stockchecker.parser.WebsiteParsers
-import org.fusesource.jansi.AnsiConsole
+import org.jline.reader.LineReader
+import org.jline.reader.LineReaderBuilder
+import org.jline.terminal.TerminalBuilder
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import java.util.*
@@ -14,16 +16,24 @@ import kotlin.concurrent.fixedRateTimer
 
 class StockChecker {
 
+    companion object {
+        const val PROMPT = "> "
+    }
+
     private var enabled = true
-    private val logger: Logger = SimpleLogger()
-    private var timer: Timer? = null
     private val commandManager = CommandManager()
-    private val commandExecutor = CommandExecutor(logger, commandManager)
+    private lateinit var commandExecutor: CommandExecutor
+    private lateinit var logger: Logger
+    private lateinit var timer: Timer
+    private lateinit var reader: LineReader
 
     fun enable() {
-        AnsiConsole.systemInstall()
+        setupConsole()
+
+        commandExecutor = CommandExecutor(logger, commandManager)
+
         logger.info("Insert link:")
-        val url = readLine() ?: throw IllegalArgumentException()
+        val url = reader.readLine(PROMPT) ?: throw IllegalArgumentException()
 
         logger.info("Connecting to $url...")
 
@@ -52,15 +62,21 @@ class StockChecker {
     }
 
     fun exit() {
-        timer?.cancel()
+        timer.cancel()
         logger.info("Exiting...")
-        AnsiConsole.systemUninstall()
 
         enabled = false
     }
 
+    private fun setupConsole() {
+        val terminal = TerminalBuilder.builder().jansi(true).name("Stock Checker").build()
+        reader = LineReaderBuilder.builder().terminal(terminal).build()
+
+        logger = SimpleLogger(reader)
+    }
+
     private fun askForCommandInput() {
-        val command = readLine() ?: return
+        val command = reader.readLine(PROMPT) ?: return
         commandExecutor.execute(command)
     }
 
