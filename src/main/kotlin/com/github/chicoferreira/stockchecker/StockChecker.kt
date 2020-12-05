@@ -4,10 +4,9 @@ import com.github.chicoferreira.stockchecker.command.CommandExecutor
 import com.github.chicoferreira.stockchecker.command.CommandManager
 import com.github.chicoferreira.stockchecker.commands.ExitCommand
 import com.github.chicoferreira.stockchecker.console.Console
-import com.github.chicoferreira.stockchecker.parser.WebsiteParsers
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
+import com.github.chicoferreira.stockchecker.parser.Website
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.concurrent.fixedRateTimer
 
 class StockChecker {
@@ -28,28 +27,21 @@ class StockChecker {
 
         console.info("Connecting to $url...")
 
-        val websiteParser = WebsiteParsers.values().find { it.isUrl(url) }
+        val website = Website.values().find { it.isUrl(url) }
 
-        if (websiteParser == null) {
+        if (website == null) {
             console.warning("Couldn't find parser for $url.")
             return
         }
 
-        timer = fixedRateTimer("stock-checker-timer", false, 0, 5000) {
-            runCatching<Document> {
-                Jsoup.connect(url).get()
-            }.onSuccess {
-                websiteParser.parser.parse(it).buildRender().also { result -> console.info(result) }
-            }.onFailure {
-                console.warning("Couldn't connect to $url: ${it.message}")
-            }
-        }
+        timer = fixedRateTimer("stock-checker-timer", false, 0, 1000, StockCheckerTask(url, website, console))
 
         commandManager.register(ExitCommand(this))
 
         while (enabled) {
             commandExecutor.execute(console.readLine())
         }
+
     }
 
     fun exit() {
