@@ -24,5 +24,5 @@ jobs:
     - name: Archive release
       uses: actions/upload-artifact@v2
       with:
-        name: stock-checker-1.0-SNAPSHOT.zip
+        name: stock-checker-1.0-SNAPSHOT
         path: build/distributions/stock-checker-1.0-SNAPSHOT.zip
