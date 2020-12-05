@@ -20,4 +20,9 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      run: ./gradlew build
+      run: ./gradlew assembleDist
+    - name: Archive release
+      uses: actions/upload-artifact@v2
+      with:
+        name: stock-checker-1.0-SNAPSHOT.zip
+        path: build/distributions/stock-checker-1.0-SNAPSHOT.zip
