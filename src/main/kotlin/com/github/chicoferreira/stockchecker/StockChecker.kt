@@ -2,11 +2,12 @@ package com.github.chicoferreira.stockchecker
 
 import com.github.chicoferreira.stockchecker.command.CommandExecutor
 import com.github.chicoferreira.stockchecker.command.CommandManager
+import com.github.chicoferreira.stockchecker.commands.AddCommand
 import com.github.chicoferreira.stockchecker.commands.ExitCommand
 import com.github.chicoferreira.stockchecker.console.Console
-import com.github.chicoferreira.stockchecker.parser.Website
+import com.github.chicoferreira.stockchecker.product.ProductLoader
+import com.github.chicoferreira.stockchecker.product.ProductManager
 import java.util.*
-import java.util.concurrent.ConcurrentHashMap
 import kotlin.concurrent.fixedRateTimer
 
 class StockChecker {
@@ -14,29 +15,24 @@ class StockChecker {
     private var enabled = true
     private val console = Console()
     private val commandManager = CommandManager()
-    private lateinit var commandExecutor: CommandExecutor
+    private val commandExecutor = CommandExecutor(console, commandManager)
+    private val productManager = ProductManager()
+    private val productLoader = ProductLoader(console)
+
     private lateinit var timer: Timer
 
     fun enable() {
         console.setup()
 
-        commandExecutor = CommandExecutor(console, commandManager)
-
-        console.info("Insert link:")
-        val url = console.readLine()
-
-        console.info("Connecting to $url...")
-
-        val website = Website.values().find { it.isUrl(url) }
-
-        if (website == null) {
-            console.warning("Couldn't find parser for $url.")
-            return
+        if (productManager.empty()) {
+            console.info("No product is loaded. Use 'add <link>' to add a new product.")
         }
 
-        timer = fixedRateTimer("stock-checker-timer", false, 0, 1000, StockCheckerTask(url, website, console))
+        // TODO: change delay back to 1000
+        timer = fixedRateTimer("stock-checker-timer", false, 0, 10000, StockCheckerTask(productManager, console))
 
         commandManager.register(ExitCommand(this))
+        commandManager.register(AddCommand(console, productManager, productLoader))
 
         while (enabled) {
             commandExecutor.execute(console.readLine())

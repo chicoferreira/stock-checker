@@ -20,7 +20,7 @@ class CommandExecutor(private val logger: Logger, private val commandManager: Co
 
         val command = commandManager.get(commandName)
         if (command == null) {
-            logger.info("${ConsoleColor.RED}Couldn't recognize that command. Use 'exit' to stop.")
+            logger.warning("Couldn't recognize that command. Use 'exit' to stop.")
             return
         }
 

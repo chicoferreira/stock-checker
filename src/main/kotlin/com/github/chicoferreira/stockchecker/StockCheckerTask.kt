@@ -1,33 +1,33 @@
 package com.github.chicoferreira.stockchecker
 
 import com.github.chicoferreira.stockchecker.console.Console
-import com.github.chicoferreira.stockchecker.parser.Website
+import com.github.chicoferreira.stockchecker.product.Product
+import com.github.chicoferreira.stockchecker.product.ProductManager
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import java.util.*
-import java.util.concurrent.ConcurrentHashMap
 
-class StockCheckerTask(val url: String, val website: Website, val console: Console) : (TimerTask) -> Unit {
+class StockCheckerTask(val productManager: ProductManager, val console: Console) : (TimerTask) -> Unit {
 
-    val lastAccessMap: MutableMap<Website, Long> = ConcurrentHashMap()
+    // TODO: website intelligent based delay
+    var currentProductIndex: Int = -1
 
     override fun invoke(p1: TimerTask) {
-        val lastTimeAccessed = lastAccessMap[website]
-        if (lastTimeAccessed != null && isInDelay(lastTimeAccessed)) {
-            return
-        }
+        currentProductIndex = if (currentProductIndex + 1 >= productManager.size()) 0 else currentProductIndex + 1
 
-        lastAccessMap[website] = System.currentTimeMillis()
+        if (productManager.empty()) return
 
-        runCatching<Document> {
-            Jsoup.connect(url).get()
-        }.onSuccess {
-            website.parser.parse(it).buildRender().also { result -> console.info(result) }
-        }.onFailure {
-            console.warning("Couldn't connect to $url: ${it.message}")
-        }
+        val product = productManager[currentProductIndex]
+        connect(product)
     }
 
-    private fun isInDelay(lastTimeAccessed: Long): Boolean =
-        System.currentTimeMillis() - lastTimeAccessed < website.delayInSeconds * 1000
+    private fun connect(product: Product) {
+        runCatching<Document> {
+            Jsoup.connect(product.url).get()
+        }.onSuccess {
+            product.website.parser.parse(it).buildRender().also { result -> console.info(result) }
+        }.onFailure {
+            console.warning("Couldn't fetch info from ${product.url}: ${it.message}")
+        }
+    }
 }
