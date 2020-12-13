@@ -1,4 +1,4 @@
-package com.github.chicoferreira.stockchecker.parser.property
+package com.github.chicoferreira.stockchecker.product.property
 
 interface ProductProperty<T> {
 
