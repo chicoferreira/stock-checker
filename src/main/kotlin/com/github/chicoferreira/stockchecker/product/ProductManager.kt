@@ -20,7 +20,7 @@ class ProductManager() {
         productList.add(product)
     }
 
-    fun remove(index: Int) = productList.removeAt(index)
+    fun remove(index: Int): Product = productList.removeAt(index)
 
     fun empty() = productList.isEmpty()
 

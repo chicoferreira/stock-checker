@@ -5,6 +5,7 @@ import com.github.chicoferreira.stockchecker.command.CommandManager
 import com.github.chicoferreira.stockchecker.commands.AddCommand
 import com.github.chicoferreira.stockchecker.commands.ExitCommand
 import com.github.chicoferreira.stockchecker.commands.ListCommand
+import com.github.chicoferreira.stockchecker.commands.RemoveCommand
 import com.github.chicoferreira.stockchecker.console.Console
 import com.github.chicoferreira.stockchecker.product.ProductController
 import com.github.chicoferreira.stockchecker.product.ProductManager
@@ -37,6 +38,7 @@ class StockChecker {
         commandManager.register(ExitCommand(this))
         commandManager.register(AddCommand(console, productManager, productController))
         commandManager.register(ListCommand(console, productManager))
+        commandManager.register(RemoveCommand(console, productManager))
 
         while (enabled) {
             commandExecutor.execute(console.readLine())

@@ -10,6 +10,11 @@ class ListCommand(val logger: Logger, val productManager: ProductManager) : Comm
     override val name: String = "list"
 
     override fun execute(args: List<String>) {
+        if(productManager.empty()) {
+            logger.info("No product is loaded.")
+            return
+        }
+
         logger.info("Product list:")
         for ((index, product) in productManager.getAll().withIndex()) {
             logger.info("- ($index) ${findDisplayName(product)}")

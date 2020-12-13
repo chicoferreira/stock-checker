@@ -14,6 +14,7 @@ interface ProductProperty<T> {
             return property.render(value)
         }
 
+        override fun toString(): String = render()
 
     }
 
