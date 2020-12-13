@@ -8,11 +8,4 @@ enum class Website(val websiteUrl: String, val parser: WebsiteParser, val delayI
     PCDIGA("pcdiga.com", PCDIGAWebsiteParser()),
     PICHAU("pichau.com.br", PichauWebsiteParser(), 10);
 
-    fun isUrl(url: String): Boolean {
-        val cleanUrl = url
-                .replaceFirst("https://www.", "")
-                .replaceFirst("http://www.", "")
-        return cleanUrl.startsWith(websiteUrl)
-    }
-
 }

@@ -1,4 +1,4 @@
-package com.github.chicoferreira.stockchecker.parser.property
+package com.github.chicoferreira.stockchecker.product.property
 
 interface ProductProperty<T> {
 
@@ -14,6 +14,7 @@ interface ProductProperty<T> {
             return property.render(value)
         }
 
+        override fun toString(): String = render()
 
     }
 

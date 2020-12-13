@@ -1,33 +1,54 @@
 package com.github.chicoferreira.stockchecker
 
-import com.github.chicoferreira.stockchecker.console.Console
+import com.github.chicoferreira.stockchecker.logger.Logger
 import com.github.chicoferreira.stockchecker.parser.Website
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
+import com.github.chicoferreira.stockchecker.product.Product
+import com.github.chicoferreira.stockchecker.product.ProductController
+import com.github.chicoferreira.stockchecker.product.ProductManager
 import java.util.*
-import java.util.concurrent.ConcurrentHashMap
+import kotlin.collections.LinkedHashMap
 
-class StockCheckerTask(val url: String, val website: Website, val console: Console) : (TimerTask) -> Unit {
+class StockCheckerTask(
+    val productManager: ProductManager,
+    val productController: ProductController,
+    val logger: Logger,
+) : (TimerTask) -> Unit {
 
-    val lastAccessMap: MutableMap<Website, Long> = ConcurrentHashMap()
+    val lastAccessMap = LinkedHashMap<Product, Long>()
+    val lastAccessWebsiteMap = LinkedHashMap<Website, Long>()
 
     override fun invoke(p1: TimerTask) {
-        val lastTimeAccessed = lastAccessMap[website]
-        if (lastTimeAccessed != null && isInDelay(lastTimeAccessed)) {
-            return
-        }
+        val product: Product = findNextProduct() ?: return
 
-        lastAccessMap[website] = System.currentTimeMillis()
+        productController.connect(product).also { logger.info(it.buildRender()) }
 
-        runCatching<Document> {
-            Jsoup.connect(url).get()
-        }.onSuccess {
-            website.parser.parse(it).buildRender().also { result -> console.info(result) }
-        }.onFailure {
-            console.warning("Couldn't connect to $url: ${it.message}")
+        System.currentTimeMillis().also {
+            lastAccessWebsiteMap[product.website] = it
+            lastAccessMap[product] = it
         }
     }
 
-    private fun isInDelay(lastTimeAccessed: Long): Boolean =
-        System.currentTimeMillis() - lastTimeAccessed < website.delayInSeconds * 1000
+    fun findNextProduct(): Product? {
+        var product: Product? = null
+
+        for (currentProduct in productManager.getAll()) {
+            if (!currentProduct.website.isInDelay()) {
+                if (product == null || currentProduct.lastAccessed < product.lastAccessed) {
+                    product = currentProduct
+                }
+            }
+        }
+
+        return product
+    }
+
+    private val Product.lastAccessed: Long
+        get() = lastAccessMap[this] ?: 0.toLong()
+
+    private fun Website.isInDelay(): Boolean {
+        val lastTimeAccessed = lastAccessWebsiteMap[this] ?: return false
+
+        return System.currentTimeMillis() - lastTimeAccessed <= this.delayInSeconds * 1000
+    }
+
 }

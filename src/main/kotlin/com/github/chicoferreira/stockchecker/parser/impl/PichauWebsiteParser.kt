@@ -2,7 +2,7 @@ package com.github.chicoferreira.stockchecker.parser.impl
 
 import com.github.chicoferreira.stockchecker.StockCheckResult
 import com.github.chicoferreira.stockchecker.parser.WebsiteParser
-import com.github.chicoferreira.stockchecker.parser.property.ProductProperties
+import com.github.chicoferreira.stockchecker.product.property.ProductProperties
 import com.github.chicoferreira.stockchecker.util.Price
 import org.jsoup.nodes.Document
 
