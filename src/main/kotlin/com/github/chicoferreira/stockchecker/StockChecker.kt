@@ -32,7 +32,7 @@ class StockChecker {
 
         // TODO: change delay back to 1000
         timer = fixedRateTimer(
-            "stock-checker-timer", false, 0, 10000, StockCheckerTask(productManager, productController, console)
+            "stock-checker-timer", false, 0, 1000, StockCheckerTask(productManager, productController, console)
         )
 
         commandManager.register(ExitCommand(this))
