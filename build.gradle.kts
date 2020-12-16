@@ -19,6 +19,8 @@ dependencies {
     implementation("org.fusesource.jansi:jansi:2.0.1")
     implementation("org.jline:jline:3.9.0")
     implementation("org.jline:jline-terminal-jansi:3.17.1")
+    implementation("org.junit.jupiter:junit-jupiter:5.4.2")
+    testImplementation("io.mockk:mockk:1.10.3-jdk8")
 }
 
 tasks.withType<KotlinCompile> {
@@ -27,4 +29,8 @@ tasks.withType<KotlinCompile> {
 
 application {
     mainClassName = "com.github.chicoferreira.stockchecker.MainKt"
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
