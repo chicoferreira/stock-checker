@@ -2,8 +2,9 @@ package com.github.chicoferreira.stockchecker.command
 
 import com.github.chicoferreira.stockchecker.logger.Logger
 import io.mockk.confirmVerified
+import io.mockk.every
 import io.mockk.junit5.MockKExtension
-import io.mockk.spyk
+import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Nested
@@ -47,7 +48,8 @@ internal class CommandTest {
 
         @Test
         fun `execute command`() {
-            val spyCommand = spyk(commandToTest)
+            val spyCommand = mockk<Command>(relaxed = true)
+            every { spyCommand.name } returns commandName
 
             commandManager.register(spyCommand)
 
@@ -56,7 +58,10 @@ internal class CommandTest {
             val rawCommand = commandName + " " + arguments.joinToString(" ")
             commandExecutor.execute(rawCommand)
 
-            verify { spyCommand.execute(arguments) }
+            verify {
+                spyCommand.name
+                spyCommand.execute(arguments)
+            }
 
             confirmVerified(spyCommand)
         }
