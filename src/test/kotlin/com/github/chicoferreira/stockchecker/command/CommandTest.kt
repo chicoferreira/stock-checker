@@ -1,39 +1,35 @@
 package com.github.chicoferreira.stockchecker.command
 
 import com.github.chicoferreira.stockchecker.logger.Logger
-import io.mockk.confirmVerified
-import io.mockk.every
+import io.mockk.*
 import io.mockk.junit5.MockKExtension
-import io.mockk.mockk
-import io.mockk.verify
 import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import java.util.logging.Level
 
 @ExtendWith(MockKExtension::class)
 internal class CommandTest {
 
-    val logger: Logger = object : Logger {
-        override fun log(logLevel: Level, message: String) = Unit
-    }
+    val logger: Logger = mockk(relaxed = true, relaxUnitFun = true)
 
     val commandName = "testCommand"
-    val commandToTest: Command = object : Command {
-        override val name = commandName
-
-        override fun execute(args: List<String>) = Unit
-    }
 
     @Nested
     inner class ManagerTest {
 
         val commandManager = CommandManager()
 
+        val command: Command = object : Command {
+            override val name = commandName
+
+            override fun execute(args: List<String>) = Unit
+        }
+
         @Test
         fun registerTest() {
-            commandManager.register(commandToTest)
+            commandManager.register(command)
             val get = commandManager.get(commandName.toUpperCase())
 
             assertNotNull(get)
@@ -46,24 +42,34 @@ internal class CommandTest {
         val commandManager = CommandManager()
         val commandExecutor = CommandExecutor(logger, commandManager)
 
+        val command = mockk<Command>(relaxUnitFun = true)
+
+        @BeforeEach
+        fun setupCommand() {
+            every { command.name } returns commandName
+
+            commandManager.register(command)
+        }
+
         @Test
         fun `execute command`() {
-            val spyCommand = mockk<Command>(relaxed = true)
-            every { spyCommand.name } returns commandName
-
-            commandManager.register(spyCommand)
-
             val arguments: List<String> = listOf("arg1", "arg2", "arg3")
 
             val rawCommand = commandName + " " + arguments.joinToString(" ")
             commandExecutor.execute(rawCommand)
 
             verify {
-                spyCommand.name
-                spyCommand.execute(arguments)
+                command.execute(arguments)
             }
+        }
 
-            confirmVerified(spyCommand)
+        @Test
+        fun `test empty command`() {
+            commandExecutor.execute("")
+
+            verify(exactly = 0) {
+                command.execute(any())
+            }
         }
     }
 }
