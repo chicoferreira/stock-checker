@@ -10,4 +10,6 @@ class CommandManager {
 
     fun get(commandName: String): Command? = commandMap[commandName.toLowerCase()]
 
+    fun unregister(command: Command) = commandMap.remove(command.name)
+
 }
