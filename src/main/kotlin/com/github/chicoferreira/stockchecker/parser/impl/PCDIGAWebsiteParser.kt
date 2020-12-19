@@ -22,7 +22,7 @@ class PCDIGAWebsiteParser : WebsiteParser {
         val availableShops = LinkedHashMap<String, Boolean>()
 
         for (element in stockColumn.select(".store-stock-location")) {
-            val availableShop = element.select(".icon-checkmark").isNotEmpty()
+            val availableShop = element.select(".icon-checkmark").isNotEmpty() && element.select(".stock-store-message-byorder").isEmpty()
 
             availableShops[element.text()] = availableShop
         }
