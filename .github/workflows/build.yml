@@ -17,12 +17,17 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+    - run: chmod +x gradlew
+    - name: Cache Gradle packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.gradle/caches
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+        restore-keys: ${{ runner.os }}-gradle
     - name: Build with Gradle
-      run: ./gradlew assembleDist
+      run: ./gradlew build
     - name: Archive release
       uses: actions/upload-artifact@v2
       with:
         name: stock-checker-1.0-SNAPSHOT
-        path: build/distributions/
+        path: build/distributions/stock-checker-1.0-SNAPSHOT.zip
