@@ -12,6 +12,8 @@ class ProductManager() {
 
     fun getAll(): List<Product> = productList
 
+    fun registerAll(list: List<Product>) = list.forEach(this::register)
+
     fun register(product: Product) {
         if (!product.isLoaded()) {
             throw ProductNotLoadedException()
