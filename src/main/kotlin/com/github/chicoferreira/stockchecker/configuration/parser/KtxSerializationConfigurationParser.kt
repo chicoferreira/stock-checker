@@ -14,6 +14,8 @@ private val json = Json {}
 
 class KtxSerializationConfigurationParser : ConfigurationParser {
   override fun fromJson(jsonString: String): List<Product> {
+    if(jsonString.isEmpty()) return emptyList()
+
     return json.decodeFromString(ListSerializer(ProductSerializer), jsonString)
   }
 
