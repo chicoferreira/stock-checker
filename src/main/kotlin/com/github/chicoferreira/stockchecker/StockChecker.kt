@@ -7,11 +7,12 @@ import com.github.chicoferreira.stockchecker.commands.ExitCommand
 import com.github.chicoferreira.stockchecker.commands.ListCommand
 import com.github.chicoferreira.stockchecker.commands.RemoveCommand
 import com.github.chicoferreira.stockchecker.configuration.Configuration
-import com.github.chicoferreira.stockchecker.configuration.parser.GsonConfigurationParser
 import com.github.chicoferreira.stockchecker.configuration.parser.KtxSerializationConfigurationParser
 import com.github.chicoferreira.stockchecker.console.Console
 import com.github.chicoferreira.stockchecker.product.ProductController
 import com.github.chicoferreira.stockchecker.product.ProductManager
+import com.github.chicoferreira.stockchecker.util.FileManager
+import java.nio.file.Paths
 import java.util.*
 import kotlin.concurrent.fixedRateTimer
 
@@ -23,7 +24,10 @@ class StockChecker {
     private val commandExecutor = CommandExecutor(console, commandManager)
     private val productManager = ProductManager()
     private val productController = ProductController(console)
-    private val configuration = Configuration(KtxSerializationConfigurationParser())
+    private val configuration = Configuration(KtxSerializationConfigurationParser(),
+                                              FileManager(),
+                                              Paths.get(System.getProperty("user.home")),
+                                              ".stock-checker-data.json")
 
     private lateinit var timer: Timer
 

@@ -1,35 +1,32 @@
 package com.github.chicoferreira.stockchecker.util
 
 import java.io.*
+import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.Paths
+import java.util.stream.Collectors
 
 class FileManager {
 
-    private val saveDirectory: Path = Paths.get(System.getProperty("user.home"))
-
-    fun getOrCreateFile(fileName: String): File {
+    fun getOrCreateFile(fileName: String, saveDirectory: Path): File {
         val path = saveDirectory.resolve(fileName)
         val file = path.toFile()
 
-        if (!file.exists() && !file.createNewFile()) {
-            throw IOException("Couldn't create file $fileName in $saveDirectory.")
+        if (Files.notExists(path) && file.parentFile.mkdirs()) {
+            file.createNewFile()
         }
 
         return file
     }
 
-    inline fun <T> readFile(fileName: String, block: (BufferedReader) -> T) =
-        BufferedReader(FileReader(getOrCreateFile(fileName))).let { bufferedReader ->
-            block(bufferedReader).also {
-                bufferedReader.close()
-            }
+    fun readFromFile(file: File): String {
+        BufferedReader(InputStreamReader(FileInputStream(file))).use {
+            return it.lines().collect(Collectors.joining())
         }
+    }
 
-    inline fun <T> writeFile(fileName: String, block: (BufferedWriter) -> T) =
-        BufferedWriter(FileWriter(getOrCreateFile(fileName))).let { bufferedReader ->
-            block(bufferedReader).also {
-                bufferedReader.close()
-            }
+    fun saveToFile(file: File, data: String) {
+        OutputStreamWriter(FileOutputStream(file), Charsets.UTF_8).use {
+            it.write(data)
         }
+    }
 }
