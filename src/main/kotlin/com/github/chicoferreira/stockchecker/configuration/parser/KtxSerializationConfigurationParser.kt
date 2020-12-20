@@ -10,37 +10,37 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.Json
 
-private val json = Json {}
-
 class KtxSerializationConfigurationParser : ConfigurationParser {
-  override fun fromJson(jsonString: String): List<Product> {
-    if(jsonString.isEmpty()) return emptyList()
+    private val json = Json {}
 
-    return json.decodeFromString(ListSerializer(ProductSerializer), jsonString)
-  }
+    override fun fromJson(jsonString: String): List<Product> {
+        if (jsonString.isEmpty()) return emptyList()
 
-  override fun toJson(productList: List<Product>): String {
-    return json.encodeToString(ListSerializer(ProductSerializer), productList)
-  }
-
-  internal object ProductSerializer : KSerializer<Product> {
-    @Serializable
-    private data class ProductSurrogate(val url: String, val website: String)
-
-    override val descriptor: SerialDescriptor = ProductSurrogate.serializer().descriptor
-
-    override fun serialize(encoder: Encoder, value: Product) {
-      val surrogate = ProductSurrogate(url = value.url, website = value.website.toString())
-
-      encoder.encodeSerializableValue(ProductSurrogate.serializer(), surrogate)
+        return json.decodeFromString(ListSerializer(ProductSerializer), jsonString)
     }
 
-    override fun deserialize(decoder: Decoder): Product {
-      val surrogate = decoder.decodeSerializableValue(ProductSurrogate.serializer())
-
-      return Product(surrogate.url).apply {
-        website = Website.valueOf(surrogate.website)
-      }
+    override fun toJson(productList: List<Product>): String {
+        return json.encodeToString(ListSerializer(ProductSerializer), productList)
     }
-  }
+
+    internal object ProductSerializer : KSerializer<Product> {
+        @Serializable
+        private data class ProductSurrogate(val url: String, val website: String)
+
+        override val descriptor: SerialDescriptor = ProductSurrogate.serializer().descriptor
+
+        override fun serialize(encoder: Encoder, value: Product) {
+            val surrogate = ProductSurrogate(url = value.url, website = value.website.toString())
+
+            encoder.encodeSerializableValue(ProductSurrogate.serializer(), surrogate)
+        }
+
+        override fun deserialize(decoder: Decoder): Product {
+            val surrogate = decoder.decodeSerializableValue(ProductSurrogate.serializer())
+
+            return Product(surrogate.url).apply {
+                website = Website.valueOf(surrogate.website)
+            }
+        }
+    }
 }
