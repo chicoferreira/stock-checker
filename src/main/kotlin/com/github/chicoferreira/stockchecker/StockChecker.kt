@@ -6,6 +6,8 @@ import com.github.chicoferreira.stockchecker.commands.AddCommand
 import com.github.chicoferreira.stockchecker.commands.ExitCommand
 import com.github.chicoferreira.stockchecker.commands.ListCommand
 import com.github.chicoferreira.stockchecker.commands.RemoveCommand
+import com.github.chicoferreira.stockchecker.configuration.Configuration
+import com.github.chicoferreira.stockchecker.configuration.parser.GsonConfigurationParser
 import com.github.chicoferreira.stockchecker.console.Console
 import com.github.chicoferreira.stockchecker.product.ProductController
 import com.github.chicoferreira.stockchecker.product.ProductManager
@@ -20,17 +22,21 @@ class StockChecker {
     private val commandExecutor = CommandExecutor(console, commandManager)
     private val productManager = ProductManager()
     private val productController = ProductController(console)
+    private val configuration = Configuration(GsonConfigurationParser())
 
     private lateinit var timer: Timer
 
     fun enable() {
         console.setup()
 
+        productManager.registerAll(configuration.loadProducts())
+
         if (productManager.empty()) {
             console.info("No product is loaded. Use 'add <link>' to add a new product.")
+        } else {
+            console.info("Loaded ${productManager.size()} products. Use 'add <link>' if you want to add a new product.")
         }
 
-        // TODO: change delay back to 1000
         timer = fixedRateTimer(
             "stock-checker-timer", false, 0, 1000, StockCheckerTask(productManager, productController, console)
         )
@@ -48,6 +54,8 @@ class StockChecker {
 
     fun exit() {
         timer.cancel()
+        console.info("Saving ${productManager.size()} products...")
+        configuration.saveProducts(productManager.getAll())
         console.info("Exiting...")
 
         enabled = false

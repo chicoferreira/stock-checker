@@ -21,6 +21,7 @@ dependencies {
     implementation("org.jline:jline:3.9.0")
     implementation("org.jline:jline-terminal-jansi:3.17.1")
     implementation("org.junit.jupiter:junit-jupiter:5.4.2")
+    implementation("com.google.code.gson:gson:2.8.6")
     testImplementation("io.mockk:mockk:1.10.3-jdk8")
 }
 
