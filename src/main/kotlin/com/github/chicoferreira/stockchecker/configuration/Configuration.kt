@@ -1,12 +1,28 @@
 package com.github.chicoferreira.stockchecker.configuration
 
+import com.github.chicoferreira.stockchecker.configuration.parser.ConfigurationParser
 import com.github.chicoferreira.stockchecker.product.Product
-import java.io.Reader
+import com.github.chicoferreira.stockchecker.util.FileManager
+import java.util.stream.Collectors
 
-interface Configuration {
+class Configuration(val configurationParser: ConfigurationParser) {
 
-    fun load(reader: Reader): List<Product>
+    val fileName = ".stock-checker-data.json"
+    val fileManager = FileManager()
 
-    fun save(products: List<Product>)
+    fun loadProducts(): List<Product> {
+        val jsonString = fileManager.readFile(fileName) {
+            it.lines().collect(Collectors.joining())
+        }
 
+        return configurationParser.fromJson(jsonString)
+    }
+
+    fun saveProducts(productList: List<Product>) {
+        val jsonString = configurationParser.toJson(productList)
+
+        fileManager.writeFile(fileName) {
+            it.write(jsonString)
+        }
+    }
 }

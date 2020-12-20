@@ -6,11 +6,11 @@ import com.github.chicoferreira.stockchecker.commands.AddCommand
 import com.github.chicoferreira.stockchecker.commands.ExitCommand
 import com.github.chicoferreira.stockchecker.commands.ListCommand
 import com.github.chicoferreira.stockchecker.commands.RemoveCommand
-import com.github.chicoferreira.stockchecker.configuration.impl.GsonConfiguration
+import com.github.chicoferreira.stockchecker.configuration.Configuration
+import com.github.chicoferreira.stockchecker.configuration.parser.GsonConfigurationParser
 import com.github.chicoferreira.stockchecker.console.Console
 import com.github.chicoferreira.stockchecker.product.ProductController
 import com.github.chicoferreira.stockchecker.product.ProductManager
-import com.github.chicoferreira.stockchecker.util.FileManager
 import java.util.*
 import kotlin.concurrent.fixedRateTimer
 
@@ -22,14 +22,14 @@ class StockChecker {
     private val commandExecutor = CommandExecutor(console, commandManager)
     private val productManager = ProductManager()
     private val productController = ProductController(console)
-    private val configuration = GsonConfiguration(console, FileManager(console))
+    private val configuration = Configuration(GsonConfigurationParser())
 
     private lateinit var timer: Timer
 
     fun enable() {
         console.setup()
 
-        productManager.registerAll(configuration.load())
+        productManager.registerAll(configuration.loadProducts())
 
         if (productManager.empty()) {
             console.info("No product is loaded. Use 'add <link>' to add a new product.")
@@ -55,7 +55,7 @@ class StockChecker {
     fun exit() {
         timer.cancel()
         console.info("Saving ${productManager.size()} products...")
-        configuration.save(productManager.getAll())
+        configuration.saveProducts(productManager.getAll())
         console.info("Exiting...")
 
         enabled = false
