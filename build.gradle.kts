@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.4.10"
+    kotlin("plugin.serialization") version "1.4.10"
     application
     jacoco
 }
@@ -22,6 +23,7 @@ dependencies {
     implementation("org.jline:jline-terminal-jansi:3.17.1")
     implementation("org.junit.jupiter:junit-jupiter:5.4.2")
     implementation("com.google.code.gson:gson:2.8.6")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1")
     testImplementation("io.mockk:mockk:1.10.3-jdk8")
 }
 
