@@ -56,7 +56,7 @@ interface Parser {
 
 abstract class ConsequentParser : Parser {
 
-    open fun createToken(value: String): Token = Token(value)
+    open fun tokenOf(value: String): Token = Token(value)
 
     override fun parse(tokenizer: Tokenizer) {
         val startPos: Int = tokenizer.pos
@@ -67,8 +67,9 @@ abstract class ConsequentParser : Parser {
         while (!tokenizer.isAtEnd && canParse(tokenizer.peek())) {
             builder.append(tokenizer.advance())
         }
+        tokenizer.pos = startPos + builder.length
 
-        tokenizer add createToken(builder.toString()).also { tokenizer.pos = startPos + builder.length }
+        tokenizer add tokenOf(builder.toString())
     }
 }
 
@@ -79,7 +80,7 @@ class OperatorParser : ConsequentParser() {
     }
 
     override fun canParse(char: Char): Boolean = operators.contains(char)
-    override fun createToken(value: String): Token = OperatorToken(value)
+    override fun tokenOf(value: String): Token = OperatorToken(value)
 }
 
 class ParentesisParser : Parser {
@@ -89,17 +90,19 @@ class ParentesisParser : Parser {
     }
 
     override fun canParse(char: Char): Boolean = operators.contains(char)
-    override fun parse(tokenizer: Tokenizer) = tokenizer add ParentesisToken(tokenizer.advance() == '(')
+    override fun parse(tokenizer: Tokenizer) {
+        tokenizer add ParentesisToken(tokenizer.advance() == '(')
+    }
 }
 
 class NumberParser : ConsequentParser() {
     override fun canParse(char: Char): Boolean = char.isDigit()
-    override fun createToken(value: String): Token = NumberToken(value)
+    override fun tokenOf(value: String): Token = NumberToken(value)
 }
 
 class LetterParser : ConsequentParser() {
     override fun canParse(char: Char): Boolean = char.isLetter()
-    override fun createToken(value: String): Token = LetterToken(value)
+    override fun tokenOf(value: String): Token = LetterToken(value)
 }
 
 class SpaceRemoverParser : Parser {
